@@ -7,6 +7,8 @@ use App\Base\BaseController;
 use App\Constants\ErrorCode;
 use App\Exception\ManageException;
 use App\Services\Admin\LoginService;
+use App\Utils\Redis\Redis;
+use Hyperf\Context\Context;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -42,5 +44,30 @@ class LoginController extends BaseController
         $token = (new LoginService())->toLogin($username, $password);
 
         return $this->success(['data' => $token]);
+    }
+
+    /**
+     * 获取登录者详情
+     *
+     * @author yls
+     * @return ResponseInterface
+     */
+    public function loginInfo() : ResponseInterface
+    {
+        $admin = Context::get('admin');
+        return $this->success(['data' => ['id' => $admin['id'], 'username' => $admin['username']]]);
+    }
+
+    /**
+     * 退出登录
+     *
+     * @author yls
+     * @return ResponseInterface
+     */
+    public function logout() : ResponseInterface
+    {
+        $token = Context::get('token');
+        Redis::getInstance()->del($token);
+        return $this->success();
     }
 }

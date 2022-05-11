@@ -26,13 +26,13 @@ class ManageExceptionHandler extends ExceptionHandler
     public function handle(Throwable $throwable, ResponseInterface $response) : ResponseInterface
     {
         // 判断被捕获到的异常是希望被捕获的异常
-        if ($throwable instanceof ManageException) {
+        if ($throwable instanceof ManageException || 'dev' === env('APP_ENV', 'prod')) {
             // 阻止异常冒泡
             $this->stopPropagation();
 
             // 格式化输出
             $data = json_encode([
-                'code' => $throwable->getCode(),
+                'code' => 0 === $throwable->getCode() ? ErrorCode::FAILED : $throwable->getCode(),
                 'message' => $throwable->getMessage(),
             ], JSON_UNESCAPED_UNICODE);
             return $response->withStatus(200)->withBody(new SwooleStream($data));

@@ -18,6 +18,8 @@ return [
 //        \Hyperf\Validation\Middleware\ValidationMiddleware::class,
 
         //跨域
-        \App\Utils\Middleware\CorsMiddleware::class
+        \App\Utils\Middleware\CorsMiddleware::class,
+        // 登录验证
+        \App\Utils\Middleware\LoginMiddleware::class
     ],
 ];

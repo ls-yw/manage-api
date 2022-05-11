@@ -36,6 +36,16 @@ class ErrorCode extends AbstractConstants
     const FAILED = 1;
 
     /**
+     * @Message("保存失败")
+     */
+    const SAVE_FAILED = 2;
+
+    /**
+     * @Message("删除失败")
+     */
+    const DELETE_FAILED = 3;
+
+    /**
      * @Message("未登录")
      */
     const NO_LOGIN = 101;
@@ -44,6 +54,10 @@ class ErrorCode extends AbstractConstants
      * @Message("token生成失败")
      */
     const CREATE_TOKEN = 201;
+    /**
+     * @Message("参数错误")
+     */
+    const PARAMS_FAILED = 202;
 
 
     /************************ FORM *****************************/
@@ -66,8 +80,50 @@ class ErrorCode extends AbstractConstants
      * @Message("请输入正确的密码")
      */
     const PASSWORD_FAILED = 1004;
+    /**
+     * @Message("名称不能为空")
+     */
+    const EMPTY_NAME = 1005;
+    /**
+     * @Message("封面缩略图不能为空")
+     */
+    const EMPTY_THUMB_IMG = 1006;
+
+    /**
+     * @Message("上传失败")
+     */
+    const UPLOAD_FAILEd = 1007;
+
+    /************************ MODEL *****************************/
+    /**
+     * @Message("找不到数据")
+     */
+    const NO_FOUND_DATA = 1101;
 
 
+    /************************ NOVEL *****************************/
+
+    /**
+     * @Message("该小说章节未清空，不能删除小说")
+     */
+    const DELETE_BOOK_HAVE_ARTICLE = 12001;
+
+    /**
+     * @Message("获取小说内容失败")
+     */
+    const GET_CONTENT_FAILED = 12002;
+    /**
+     * @Message("文章内容不能为空")
+     */
+    const EMPTY_ARTICLE_CONTENT = 12003;
+    /**
+     * @Message("oss写入失败")
+     */
+    const WRITE_OSS_OF_CONTENT = 12004;
+    /**
+     * @Message("删除oss章节失败")
+     */
+    const DELETE_OSS_ARTICLE = 12005;
 
 
 

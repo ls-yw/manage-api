@@ -25,7 +25,11 @@
         "hyperf/db-connection": "^2.2",
         "hyperf/command": "^2.2",
         "ext-json": "*",
-        "hyperf/redis": "^2.2"
+        "hyperf/redis": "^2.2",
+        "woodlsy/http-client": "*",
+      "ext-curl": "*",
+        "hyperf/flysystem-oss": "dev-main",
+        "hyperf/filesystem": "^2.1"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
