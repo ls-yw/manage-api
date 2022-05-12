@@ -46,6 +46,16 @@ class ErrorCode extends AbstractConstants
     const DELETE_FAILED = 3;
 
     /**
+     * @Message("变更失败")
+     */
+    const CHANGE_FAILED = 4;
+
+    /**
+     * @Message("确认失败")
+     */
+    const CONFIRM_FAILED = 5;
+
+    /**
      * @Message("未登录")
      */
     const NO_LOGIN = 101;

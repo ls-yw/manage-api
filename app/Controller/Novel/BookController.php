@@ -6,7 +6,9 @@ namespace App\Controller\Novel;
 use App\Base\BaseController;
 use App\Constants\ErrorCode;
 use App\Exception\ManageException;
+use App\Services\Novel\ArticleService;
 use App\Services\Novel\BookService;
+use App\Services\Novel\CollectService;
 use App\Utils\Helper\HelperArray;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,6 +33,13 @@ class BookController extends BaseController
         $data          = [];
         $data['list']  = (new BookService())->getList($type, $keyword, null, $page, $size);
         $data['total'] = (new BookService())->getListCount($type, $keyword, null);
+
+        if (!empty($data['list'])) {
+            foreach ($data['list'] as $key => $value) {
+                $data['list'][$key]['waitArticleNum'] = (new CollectService())->getCollectFormListCount($value['id'], 0);
+                $data['list'][$key]['ossArticleNum']  = (new ArticleService())->getCountByOss($value['id'], 0);
+            }
+        }
 
         return $this->success($data);
     }
@@ -105,5 +114,23 @@ class BookController extends BaseController
         $data = empty($bookId) ? [] : (new BookService())->getChapterAll($bookId);
 
         return $this->success(['data' => HelperArray::showPair($data, 'id', 'name')]);
+    }
+
+    /**
+     * 变更采集状态
+     *
+     * @author yls
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     */
+    public function changeCollect(RequestInterface $request) : ResponseInterface
+    {
+        $id        = (int) $request->input('id');
+        $isCollect = (int) $request->input('isCollect');
+        $row       = (new BookService())->changeCollect($id, $isCollect);
+        if (!$row) {
+            throw new ManageException(ErrorCode::CHANGE_FAILED);
+        }
+        return $this->success();
     }
 }

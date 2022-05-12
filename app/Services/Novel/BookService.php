@@ -94,8 +94,8 @@ class BookService extends BaseService
         }
 
         $bookInfo = Book::find($id);
+        Chapter::where('book_id', $id)->delete();
         // TODO
-        //        (new Chapter())->delData(['book_id' => $bookId]);
         //        (new CollectLogic())->delCollectFrom($bookId, (int)$bookInfo['book_collect_id']);
         return Book::where('id', $id)->delete();
     }
@@ -124,7 +124,7 @@ class BookService extends BaseService
     public function updateChapterArticleNum(int $chapterId, string $type, int $num) : int
     {
         $model = Chapter::where(['id', $chapterId]);
-        return 'incr' === $type ? $model->increment('chapter_articlenum', $num) :  $model->decrement('chapter_articlenum', $num);
+        return 'incr' === $type ? $model->increment('chapter_articlenum', $num) : $model->decrement('chapter_articlenum', $num);
     }
 
     /**
@@ -134,10 +134,10 @@ class BookService extends BaseService
      * @param int $bookId
      * @return int
      */
-    public function updateBookArticleNumAndWordsNumber(int $bookId):int
+    public function updateBookArticleNumAndWordsNumber(int $bookId) : int
     {
         $articleCount = (new ArticleService())->getListCount($bookId);
-        $wordsNumber  = (int)Article::where(['book_id' => $bookId])->sum('wordnumber');
+        $wordsNumber  = (int) Article::where(['book_id' => $bookId])->sum('wordnumber');
         return Book::where('id', $bookId)->update(['book_articlenum' => $articleCount, 'book_wordsnumber' => $wordsNumber]);
     }
 
@@ -151,5 +151,18 @@ class BookService extends BaseService
     public function getById(int $id) : object
     {
         return Book::find($id);
+    }
+
+    /**
+     * 变更采集状态
+     *
+     * @author yls
+     * @param int $id
+     * @param int $isCollect
+     * @return int
+     */
+    public function changeCollect(int $id, int $isCollect) : int
+    {
+        return Book::where('id', $id)->update(['is_collect' => $isCollect]);
     }
 }

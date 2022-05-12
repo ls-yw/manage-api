@@ -170,4 +170,17 @@ class ArticleService extends BaseService
         }
         return $row;
     }
+
+    /**
+     * 获取未上传OSS文章数
+     *
+     * @author yls
+     * @param int $bookId
+     * @param int $oss
+     * @return int
+     */
+    public function getCountByOss(int $bookId, int $oss):int
+    {
+        return Article::where('book_id', $bookId)->where('is_oss', $oss)->count();
+    }
 }
