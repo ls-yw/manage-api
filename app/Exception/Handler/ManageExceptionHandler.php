@@ -26,7 +26,7 @@ class ManageExceptionHandler extends ExceptionHandler
     public function handle(Throwable $throwable, ResponseInterface $response) : ResponseInterface
     {
         // 判断被捕获到的异常是希望被捕获的异常
-        if ($throwable instanceof ManageException || 'dev' === env('APP_ENV', 'prod')) {
+        if ($throwable instanceof ManageException || 'prod' === env('APP_ENV', 'prod')) {
             // 阻止异常冒泡
             $this->stopPropagation();
 
@@ -48,6 +48,8 @@ class ManageExceptionHandler extends ExceptionHandler
             // 系统报错，输出到控制面板
             $this->logger->error(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
             $this->logger->error($throwable->getTraceAsString());
+            print_r(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
+            print_r($throwable->getTraceAsString());
             return $response->withStatus(500)->withBody(new SwooleStream($data));
         }
     }

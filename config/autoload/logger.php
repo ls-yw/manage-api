@@ -42,7 +42,11 @@ $bugLog  = [
     ]
 ];
 
-$log = array_merge($infoLog, 'dev' === $appEnv ? $bugLog : []);
+$logConfigs = [$infoLog];
+if ('dev' === $appEnv) {
+    $logConfigs[] = $bugLog;
+}
+//$log = array_merge($infoLog, 'dev' === $appEnv ? $bugLog : []);
 return [
     'default' => [
         /*'handler'   => [
@@ -68,7 +72,7 @@ return [
             ],
         ],*/
         'handlers' => [
-            $log
+            $logConfigs
         ],
     ],
 ];

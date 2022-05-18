@@ -6,9 +6,9 @@ namespace App\Controller\Novel;
 use App\Base\BaseController;
 use App\Constants\ErrorCode;
 use App\Exception\ManageException;
-use App\Model\Novel\Article;
 use App\Services\Novel\ArticleService;
 use App\Services\Novel\BookService;
+use App\Services\Novel\CollectService;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -65,13 +65,14 @@ class ArticleController extends BaseController
      */
     public function save(RequestInterface $request) : ResponseInterface
     {
-        $data               = [
-            'id'           => (int) $request->input('id'),
-            'title'        => (string) $request->input('title'),
-            'chapter_id'   => (int) $request->input('chapter_id'),
-            'sort' => (int) $request->input('sort'),
-            'book_id'      => (int) $request->input('book_id'),
+        $data    = [
+            'id'         => (int) $request->input('id'),
+            'title'      => (string) $request->input('title'),
+            'chapter_id' => (int) $request->input('chapter_id'),
+            'sort'       => (int) $request->input('sort'),
+            'book_id'    => (int) $request->input('book_id'),
         ];
+        $collectFromId = (int)$request->input('collect_from_id');
         $content = $request->input('content');
         if (empty($content)) {
             throw new ManageException(ErrorCode::EMPTY_ARTICLE_CONTENT);
@@ -86,13 +87,17 @@ class ArticleController extends BaseController
         }
         if ($oldChapterId !== $newChapterId) {
             if (!empty($oldChapterId)) {
-                (new BookService())->updateChapterArticleNum((int) $oldChapterId, 'decr', 1);
+                (new BookService())->updateChapterArticleNum($oldChapterId, 'decr', 1);
             }
             (new BookService())->updateChapterArticleNum((int) $newChapterId, 'incr', 1);
         }
+
         $row = (new ArticleService())->save($data, $content);
         if (!$row) {
             throw new ManageException(ErrorCode::SAVE_FAILED);
+        }
+        if (!empty($collectFromId)) {
+            (new CollectService())->confirmCollect($collectFromId);
         }
         return $this->success();
     }

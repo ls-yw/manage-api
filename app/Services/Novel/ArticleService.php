@@ -105,8 +105,8 @@ class ArticleService extends BaseService
             if (empty($articleId)) {
                 return 0;
             }
-            Book::where('id', $data['book_id'])->increment('book_articlenum');
-            Book::where('id', $data['book_id'])->increment('book_wordsnumber', $data['wordnumber']);
+            Book::where('id', $data['book_id'])->increment('articlenum');
+            Book::where('id', $data['book_id'])->increment('wordsnumber', $data['wordnumber']);
         } else {
             $oldArticle = $this->getById($articleId);
             if ((int) $oldArticle['sort'] !== (int) $data['sort']) {

@@ -13,10 +13,10 @@ use App\Model\Model;
  * @property string $reply 
  * @property int $book_id 
  * @property string $reply_at 
- * @property string $create_at 
- * @property string $update_at 
- * @property int $create_by 
- * @property int $update_by 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
+ * @property int $created_by 
+ * @property int $updated_by 
  */
 class BookApply extends Model
 {
@@ -37,11 +37,11 @@ class BookApply extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'uid', 'name', 'author', 'platform', 'reply', 'book_id', 'reply_at', 'create_at', 'update_at', 'create_by', 'update_by'];
+    protected $fillable = ['id', 'uid', 'name', 'author', 'platform', 'reply', 'book_id', 'reply_at', 'created_at', 'updated_at', 'created_by', 'updated_by'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'uid' => 'integer', 'book_id' => 'integer', 'create_by' => 'integer', 'update_by' => 'integer'];
+    protected $casts = ['id' => 'integer', 'uid' => 'integer', 'book_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
 }

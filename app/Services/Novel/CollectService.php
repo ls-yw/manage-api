@@ -45,7 +45,7 @@ class CollectService extends BaseService
      * @param int $size
      * @return object
      */
-    public function getCollectFormList(int $bookId, int $status, int $page, int $size) : object
+    public function getCollectFromList(int $bookId, int $status, int $page, int $size) : object
     {
         $offset = ($page - 1) * $size;
         $list = CollectFrom::where(['book_id' => $bookId, 'from_status' => $status])->offset($offset)->limit($size)->get();
@@ -60,7 +60,7 @@ class CollectService extends BaseService
      * @param int $status
      * @return int
      */
-    public function getCollectFormListCount(int $bookId, int $status) : int
+    public function getCollectFromListCount(int $bookId, int $status) : int
     {
         return CollectFrom::where(['book_id' => $bookId, 'from_status' => $status])->count();
     }
@@ -75,5 +75,18 @@ class CollectService extends BaseService
     public function confirmCollect(array|int $ids):int
     {
         return CollectFrom::where('id', $ids)->update(['from_status'=>1]);
+    }
+
+    /**
+     * 删除采集from
+     *
+     * @author yls
+     * @param int $bookId
+     * @param int $collectId
+     * @return int
+     */
+    public function deleteCollectFrom(int$bookId, int $collectId):int
+    {
+        return CollectFrom::where(['book_id' => $bookId, 'collect_id' => $collectId])->delete();
     }
 }

@@ -22,13 +22,13 @@ class BaseService
         $id = $data['id'] ?? 0;
         unset($data['id']);
         if (empty($id)) {
-            return (int) $model->insertGetId($data);
+            return $model->insertGetId($data);
         } else {
             $info = $model->find((int) $id);
             if (empty($info)) {
                 throw new ManageException(ErrorCode::NO_FOUND_DATA);
             }
-            return (int) $model->where('id', $id)->update($data);
+            return $model->where('id', $id)->update($data);
         }
     }
 

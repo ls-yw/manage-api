@@ -50,8 +50,8 @@ class CollectController extends BaseController
         $bookId = (int)$request->query('bookId');
 
         $data          = [];
-        $data['list']  = (new CollectService())->getCollectFormList($bookId, 0, $page, $size);
-        $data['total'] = (new CollectService())->getCollectFormListCount($bookId, 0);
+        $data['list']  = (new CollectService())->getCollectFromList($bookId, 0, $page, $size);
+        $data['total'] = (new CollectService())->getCollectFromListCount($bookId, 0);
 
         return $this->success($data);
     }
@@ -65,14 +65,14 @@ class CollectController extends BaseController
      */
     public function batchConfirmCollectArticle(RequestInterface $request) : ResponseInterface
     {
-//        $ids = (array) $request->input('ids');
-//        if (empty($ids)) {
-//            throw new ManageException(ErrorCode::PARAMS_FAILED);
-//        }
-//        $row = (new CollectService())->confirmCollect($ids);
-//        if (!$row) {
-//            throw new ManageException(ErrorCode::CONFIRM_FAILED);
-//        }
+        $ids = (array) $request->input('ids');
+        if (empty($ids)) {
+            throw new ManageException(ErrorCode::PARAMS_FAILED);
+        }
+        $row = (new CollectService())->confirmCollect($ids);
+        if (!$row) {
+            throw new ManageException(ErrorCode::CONFIRM_FAILED);
+        }
         return $this->success();
     }
 }

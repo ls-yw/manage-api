@@ -17,6 +17,9 @@ Router::addGroup('/novel/',function (){
         Router::post('delete', 'App\Controller\Novel\BookController@delete');
         Router::get('chapterPairs', 'App\Controller\Novel\BookController@chapterPairs');
         Router::post('changeCollect', 'App\Controller\Novel\BookController@changeCollect');
+        Router::get('apply', 'App\Controller\Novel\BookController@apply');
+        Router::post('replyApply', 'App\Controller\Novel\BookController@replyApply');
+        Router::post('deleteApply', 'App\Controller\Novel\BookController@deleteApply');
     });
 
     Router::addGroup('article/',function (){
@@ -32,5 +35,10 @@ Router::addGroup('/novel/',function (){
         Router::post('delete', 'App\Controller\Novel\CollectController@delete');
         Router::get('article', 'App\Controller\Novel\CollectController@collectFormArticle');
         Router::post('confirmArticle', 'App\Controller\Novel\CollectController@batchConfirmCollectArticle');
+    });
+
+    Router::addGroup('member/',function (){
+        Router::get('list', 'App\Controller\Novel\MemberController@list');
+        Router::get('book', 'App\Controller\Novel\MemberController@book');
     });
 });

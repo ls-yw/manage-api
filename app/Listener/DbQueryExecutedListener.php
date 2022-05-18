@@ -11,6 +11,7 @@ declare(strict_types=1);
  */
 namespace App\Listener;
 
+use App\Utils\Log\Log;
 use Hyperf\Database\Events\QueryExecuted;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
@@ -32,7 +33,7 @@ class DbQueryExecutedListener implements ListenerInterface
 
     public function __construct(ContainerInterface $container)
     {
-        $this->logger = $container->get(LoggerFactory::class)->get('sql');
+        $this->logger = Log::get('sql');
     }
 
     public function listen(): array
@@ -54,8 +55,7 @@ class DbQueryExecutedListener implements ListenerInterface
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
                 }
             }
-
-            $this->logger->info(sprintf('[%s] %s', $event->time, $sql));
+            $this->logger->info(sprintf('[%s][%s]%s', $event->connectionName, $event->time, $sql));
         }
     }
 }

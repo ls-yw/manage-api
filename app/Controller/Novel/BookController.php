@@ -36,7 +36,7 @@ class BookController extends BaseController
 
         if (!empty($data['list'])) {
             foreach ($data['list'] as $key => $value) {
-                $data['list'][$key]['waitArticleNum'] = (new CollectService())->getCollectFormListCount($value['id'], 0);
+                $data['list'][$key]['waitArticleNum'] = (new CollectService())->getCollectFromListCount($value['id'], 0);
                 $data['list'][$key]['ossArticleNum']  = (new ArticleService())->getCountByOss($value['id'], 0);
             }
         }
@@ -130,6 +130,61 @@ class BookController extends BaseController
         $row       = (new BookService())->changeCollect($id, $isCollect);
         if (!$row) {
             throw new ManageException(ErrorCode::CHANGE_FAILED);
+        }
+        return $this->success();
+    }
+
+    /**
+     * 申请收录列表
+     *
+     * @author yls
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     */
+    public function apply(RequestInterface $request) : ResponseInterface
+    {
+        $page = (int) $request->query('page', 1);
+        $size = (int) $request->query('size', 20);
+
+        $data          = [];
+        $data['list']  = (new BookService())->getApplyList($page, $size);
+        $data['total'] = (new BookService())->getApplyListCount();
+
+        return $this->success($data);
+    }
+
+    /**
+     * 回复申请收录
+     *
+     * @author yls
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     */
+    public function replyApply(RequestInterface $request) : ResponseInterface
+    {
+        $id     = (int) $request->input('id');
+        $bookId = (int) $request->input('book_id');
+        $reply  = (string) $request->input('reply');
+        $row    = (new BookService())->replyApply($id, $bookId, $reply);
+        if (!$row) {
+            throw new ManageException(ErrorCode::SAVE_FAILED);
+        }
+        return $this->success();
+    }
+
+    /**
+     * 删除收录申请
+     *
+     * @author yls
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     */
+    public function deleteApply(RequestInterface $request) : ResponseInterface
+    {
+        $id     = (int) $request->input('id');
+        $row    = (new BookService())->deleteApply($id);
+        if (!$row) {
+            throw new ManageException(ErrorCode::DELETE_FAILED);
         }
         return $this->success();
     }

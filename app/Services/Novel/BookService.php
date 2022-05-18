@@ -8,7 +8,9 @@ use App\Constants\ErrorCode;
 use App\Exception\ManageException;
 use App\Model\Novel\Article;
 use App\Model\Novel\Book;
+use App\Model\Novel\BookApply;
 use App\Model\Novel\Chapter;
+use App\Utils\Helper\HelperTime;
 
 class BookService extends BaseService
 {
@@ -95,9 +97,8 @@ class BookService extends BaseService
 
         $bookInfo = Book::find($id);
         Chapter::where('book_id', $id)->delete();
-        // TODO
-        //        (new CollectLogic())->delCollectFrom($bookId, (int)$bookInfo['book_collect_id']);
-        return Book::where('id', $id)->delete();
+        (new CollectService())->deleteCollectFrom($id, (int)$bookInfo['collect_id']);
+        return (int)Book::where('id', $id)->delete();
     }
 
     /**
@@ -123,8 +124,8 @@ class BookService extends BaseService
      */
     public function updateChapterArticleNum(int $chapterId, string $type, int $num) : int
     {
-        $model = Chapter::where(['id', $chapterId]);
-        return 'incr' === $type ? $model->increment('chapter_articlenum', $num) : $model->decrement('chapter_articlenum', $num);
+        $model = Chapter::where(['id' => $chapterId]);
+        return 'incr' === $type ? $model->increment('articlenum', $num) : $model->decrement('articlenum', $num);
     }
 
     /**
@@ -138,7 +139,7 @@ class BookService extends BaseService
     {
         $articleCount = (new ArticleService())->getListCount($bookId);
         $wordsNumber  = (int) Article::where(['book_id' => $bookId])->sum('wordnumber');
-        return Book::where('id', $bookId)->update(['book_articlenum' => $articleCount, 'book_wordsnumber' => $wordsNumber]);
+        return Book::where('id', $bookId)->update(['articlenum' => $articleCount, 'wordsnumber' => $wordsNumber]);
     }
 
     /**
@@ -164,5 +165,62 @@ class BookService extends BaseService
     public function changeCollect(int $id, int $isCollect) : int
     {
         return Book::where('id', $id)->update(['is_collect' => $isCollect]);
+    }
+
+    /**
+     * 获取列表
+     *
+     * @author yls
+     * @param int $page
+     * @param int $size
+     * @return object
+     */
+    public function getApplyList(int $page, int $size) : object
+    {
+        $offset = ($page - 1) * $size;
+        return BookApply::orderBy('id', 'desc')->offset($offset)->limit($size)->get();
+    }
+
+    /**
+     * 获取列表条数
+     *
+     * @author yls
+     * @return int
+     */
+    public function getApplyListCount() : int
+    {
+        return BookApply::count();
+    }
+
+    /**
+     * 申请收录回复
+     *
+     * @author yls
+     * @param int    $id
+     * @param int    $bookId
+     * @param string $reply
+     * @return int
+     */
+    public function replyApply(int $id, int $bookId, string $reply) : int
+    {
+        $data = [
+            'id'       => $id,
+            'book_id'  => $bookId,
+            'reply'    => $reply,
+            'reply_at' => HelperTime::now()
+        ];
+        return $this->saveData($data, (new BookApply()));
+    }
+
+    /**
+     * 删除收录申请
+     *
+     * @author yls
+     * @param int $id
+     * @return int
+     */
+    public function deleteApply(int $id):int
+    {
+        return (int)BookApply::where('id', $id)->delete();
     }
 }
