@@ -55,6 +55,12 @@ class ErrorCode extends AbstractConstants
      */
     const CONFIRM_FAILED = 5;
 
+
+    /**
+     * @Message("curl请求失败")
+     */
+    const CURL_FAILED = 10;
+
     /**
      * @Message("未登录")
      */
@@ -68,6 +74,8 @@ class ErrorCode extends AbstractConstants
      * @Message("参数错误")
      */
     const PARAMS_FAILED = 202;
+
+
 
 
     /************************ FORM *****************************/
@@ -134,6 +142,20 @@ class ErrorCode extends AbstractConstants
      * @Message("删除oss章节失败")
      */
     const DELETE_OSS_ARTICLE = 12005;
+    /**
+     * @Message("不存在采集规则")
+     */
+    const NO_EXISTS_COLLECT_RULES = 12006;
+
+    /**
+     * @Message("该小说已存在但不是该采集节点采集，如需重新采集，请先删除该小说")
+     */
+    const COLLECT_ID_NO_EQ = 12007;
+    /**
+     * @Message("上传封面图片失败")
+     */
+    const UPLOAD_THUMB_IMG = 12008;
+
 
 
 

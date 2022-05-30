@@ -97,8 +97,8 @@ class BookService extends BaseService
 
         $bookInfo = Book::find($id);
         Chapter::where('book_id', $id)->delete();
-        (new CollectService())->deleteCollectFrom($id, (int)$bookInfo['collect_id']);
-        return (int)Book::where('id', $id)->delete();
+        (new CollectService())->deleteCollectFrom($id, (int) $bookInfo['collect_id']);
+        return (int) Book::where('id', $id)->delete();
     }
 
     /**
@@ -209,7 +209,7 @@ class BookService extends BaseService
             'reply'    => $reply,
             'reply_at' => HelperTime::now()
         ];
-        return $this->saveData($data, (new BookApply()));
+        return $this->saveData($data, BookApply::make());
     }
 
     /**
@@ -219,8 +219,45 @@ class BookService extends BaseService
      * @param int $id
      * @return int
      */
-    public function deleteApply(int $id):int
+    public function deleteApply(int $id) : int
     {
-        return (int)BookApply::where('id', $id)->delete();
+        return (int) BookApply::where('id', $id)->delete();
+    }
+
+    /**
+     * 根据名称和作者获取小说详情
+     *
+     * @author yls
+     * @param string $name
+     * @param string $author
+     * @return object|null
+     */
+    public function getByNameAndAuthor(string $name, string $author) : ?object
+    {
+        return Book::where(['name' => $name, 'author' => $author])->first();
+    }
+
+    /**
+     * 根据ID获取小说名称
+     *
+     * @author yls
+     * @param int $bookId
+     * @return string
+     */
+    public function getBookNameById(int $bookId) : string
+    {
+        return $this->getById($bookId)->name ?? '';
+    }
+
+    /**
+     * 保存章节
+     *
+     * @author yls
+     * @param array $data
+     * @return int
+     */
+    public function saveChapter(array$data):int
+    {
+        return $this->saveData($data, chapter::make());
     }
 }

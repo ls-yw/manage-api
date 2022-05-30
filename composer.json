@@ -30,7 +30,11 @@
       "ext-curl": "*",
         "hyperf/flysystem-oss": "dev-main",
         "hyperf/filesystem": "^2.1",
-        "zoujingli/ip2region": "dev-master"
+        "zoujingli/ip2region": "dev-master",
+        "hyperf/crontab": "^2.1",
+        "hyperf/guzzle": "^2.1",
+        "symfony/css-selector": "6.0.x-dev",
+        "hyperf/websocket-server": "^2.1"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",

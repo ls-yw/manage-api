@@ -10,9 +10,6 @@ declare(strict_types = 1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-//use App\Utils\Log\LogFileHandler;
-use App\Utils\Log\RotatingLogFileHandler;
-
 $appEnv = env('APP_ENV', 'dev');
 
 

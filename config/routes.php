@@ -13,10 +13,14 @@ use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
-Router::post('/upload', 'App\Controller\admin\UploadController@index');
+Router::post('/upload', 'App\Controller\Admin\UploadController@index');
 
 require_once 'Router/Admin.php';
 require_once 'Router/Novel.php';
+
+Router::addServer('ws', function () {
+    Router::get('/collect', 'App\Controller\Novel\CollectWebSocketController');
+});
 
 Router::get('/favicon.ico', function () {
     return '';

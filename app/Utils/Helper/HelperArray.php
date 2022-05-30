@@ -11,9 +11,9 @@ class HelperArray
      * @author yls
      * @param string $content
      * @param bool   $type
-     * @return array|object
+     * @return null|array|object
      */
-    public static function jsonDecode(string $content, bool $type = true) : array|object
+    public static function jsonDecode(string $content, bool $type = true) : null|array|object
     {
         return json_decode($content, $type);
     }
@@ -54,5 +54,22 @@ class HelperArray
             }
         }
         return $arr;
+    }
+
+    /**
+     * 把数组转换为key => value格式
+     *
+     * @author yls
+     * @param array  $array
+     * @param string $keyField
+     * @param string $valueField
+     * @return array
+     */
+    public static function getPairs(array $array, string $keyField, string $valueField) : array
+    {
+        if (is_array(current($array))) {
+            return array_column($array, $valueField, $keyField);
+        }
+        return $array;
     }
 }

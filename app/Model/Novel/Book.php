@@ -21,7 +21,7 @@ use App\Model\Model;
  * @property int $articlenum 
  * @property int $wordsnumber 
  * @property int $collect_id 
- * @property int $from_collect_book_id 
+ * @property string $from_collect_book_id
  * @property int $is_collect 
  * @property string $last_collect_at 
  * @property string $last_at 
@@ -71,5 +71,5 @@ class Book extends Model
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'category' => 'integer', 'click' => 'integer', 'monthclick' => 'integer', 'weekclick' => 'integer', 'dayclick' => 'integer', 'recommend' => 'integer', 'coll' => 'integer', 'is_finished' => 'integer', 'articlenum' => 'integer', 'wordsnumber' => 'integer', 'collect_id' => 'integer', 'from_collect_book_id' => 'integer', 'is_collect' => 'integer', 'is_recommend' => 'integer', 'quality' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
+    protected $casts = ['id' => 'integer', 'category' => 'integer', 'click' => 'integer', 'monthclick' => 'integer', 'weekclick' => 'integer', 'dayclick' => 'integer', 'recommend' => 'integer', 'coll' => 'integer', 'is_finished' => 'integer', 'articlenum' => 'integer', 'wordsnumber' => 'integer', 'collect_id' => 'integer', 'is_collect' => 'integer', 'is_recommend' => 'integer', 'quality' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
 }

@@ -31,14 +31,28 @@ Router::addGroup('/novel/',function (){
 
     Router::addGroup('collect/',function (){
         Router::get('list', 'App\Controller\Novel\CollectController@list');
+        Router::get('info', 'App\Controller\Novel\CollectController@info');
         Router::post('save', 'App\Controller\Novel\CollectController@save');
         Router::post('delete', 'App\Controller\Novel\CollectController@delete');
         Router::get('article', 'App\Controller\Novel\CollectController@collectFormArticle');
         Router::post('confirmArticle', 'App\Controller\Novel\CollectController@batchConfirmCollectArticle');
+        Router::post('test', 'App\Controller\Novel\CollectController@test');
+        Router::post('collectBookInfo', 'App\Controller\Novel\CollectController@collectBookInfo');
+        Router::post('collectSaveBookInfo', 'App\Controller\Novel\CollectController@collectSaveBookInfo');
     });
 
     Router::addGroup('member/',function (){
         Router::get('list', 'App\Controller\Novel\MemberController@list');
         Router::get('book', 'App\Controller\Novel\MemberController@book');
+    });
+
+    Router::addGroup('data/',function (){
+        Router::get('search', 'App\Controller\Novel\DataController@search');
+        Router::get('spider', 'App\Controller\Novel\DataController@searchSpider');
+    });
+
+    Router::addGroup('setting/',function (){
+        Router::get('index', 'App\Controller\Novel\SettingController@index');
+        Router::post('save', 'App\Controller\Novel\SettingController@save');
     });
 });

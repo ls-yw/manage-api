@@ -22,4 +22,7 @@ return [
         // 登录验证
         \App\Utils\Middleware\LoginMiddleware::class
     ],
+//    'ws' => [
+//        yourMiddleware::class
+//    ]
 ];

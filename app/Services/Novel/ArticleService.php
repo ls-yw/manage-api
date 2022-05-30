@@ -117,7 +117,7 @@ class ArticleService extends BaseService
                 return 0;
             }
         }
-        try {
+        /*try {
             $this->Filesystem->write('book/' . $data['book_id'] . '/' . $articleId . '.txt', $content);
         } catch (FilesystemException | UnableToWriteFile | \Exception $e) {
             Log::error('写入小说内容失败', 'oss');
@@ -125,7 +125,7 @@ class ArticleService extends BaseService
             throw new ManageException(ErrorCode::WRITE_OSS_OF_CONTENT);
         }
         $url = 'http://woodlsy-novel.oss-cn-hangzhou-internal.aliyuncs.com/book/' . $data['book_id'] . '/' . $articleId . '.txt';
-        Article::where('id', $articleId)->update(['url' => $url, 'is_oss' => 1]);
+        Article::where('id', $articleId)->update(['url' => $url, 'is_oss' => 1]);*/
         return 1;
     }
 
