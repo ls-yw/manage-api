@@ -3,9 +3,11 @@ declare(strict_types = 1);
 
 namespace App\Controller\Novel;
 
+use App\Exception\ManageException;
 use App\Services\Novel\CollectService;
 use App\Utils\Helper\HelperArray;
 use App\Utils\Redis\Redis;
+use Exception;
 use Hyperf\Contract\OnCloseInterface;
 use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
@@ -93,7 +95,10 @@ class CollectWebSocketController implements OnMessageInterface, OnCloseInterface
             $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 0, 'message' => '待采集的小说ID不能为空', 'class'=>'red']));
             return;
         }
-
-        (new CollectService())->startCollect($bookId, $frame);
+        try{
+            (new CollectService())->startCollect($bookId, $frame);
+        }catch (Exception|ManageException $e) {
+            $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 0, 'message' => $e->getMessage(), 'class'=>'red']));
+        }
     }
 }

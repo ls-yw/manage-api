@@ -132,8 +132,8 @@ class CollectService extends BaseService
             }
             $row = Redis::getInstance()->setEx($key, 86400, HelperArray::jsonEncode($collectForm));
             if (!$row) {
-                Log::error($key.' 保存数据失败');
-                echo $key.' 保存数据失败'.PHP_EOL;
+                Log::error($key . ' 保存数据失败');
+                echo $key . ' 保存数据失败' . PHP_EOL;
                 return [];
             }
         }
@@ -179,12 +179,12 @@ class CollectService extends BaseService
      * 确认采集ID
      *
      * @author yls
-     * @param array|int $ids
+     * @param array $ids
      * @return int
      */
-    public function confirmCollect(array|int $ids) : int
+    public function confirmCollect(array $ids) : int
     {
-        return CollectFrom::where('id', $ids)->update(['from_status' => 1]);
+        return CollectFrom::whereIn('id', $ids)->update(['from_status' => 1]);
     }
 
     /**
@@ -294,6 +294,7 @@ class CollectService extends BaseService
             $this->_pushCollectMessage($frame, '该小说非采集小说', 'red');
             return;
         }
+        $this->_pushCollectMessage($frame, '开始采集小说《'.$bookInfo->name.'》', '', 'row');
 
         $collectRule = (new CollectRuleService())->getByCollectId((int) $bookInfo->collect_id);
         if (empty($collectRule)) {
@@ -332,6 +333,7 @@ class CollectService extends BaseService
      * @author yls
      * @param int        $bookId
      * @param int        $collectFormIndex
+     * @param string     $fromBookId
      * @param int        $chapterId
      * @param Frame|null $frame
      * @return bool
@@ -349,7 +351,7 @@ class CollectService extends BaseService
             $this->_pushCollectMessage($frame, '该小说的采集规则不存在', 'red');
             return false;
         }
-        $url            = (new CollectRuleService())->dealUrlTags($collectRule->article_url, $collectRule->sub_book_id, $fromBookId, (string)$form['from_article_id']);
+        $url            = (new CollectRuleService())->dealUrlTags($collectRule->article_url, $collectRule->sub_book_id, $fromBookId, (string) $form['from_article_id']);
         $articleContent = (new CollectRuleService())->collectArticleContent((int) $form['collect_id'], $url);
         if ($articleContent['wordsNumber'] > 200) {
             $article = [
@@ -365,11 +367,16 @@ class CollectService extends BaseService
             } else {
                 CollectFrom::where(['id' => $form['id']])->update(['from_status' => 1]);
 
-                $row              = Chapter::where('id', $chapterId)->increment('articlenum');
+                $row = Chapter::where('id', $chapterId)->increment('articlenum');
                 $this->_pushCollectMessage($frame, $form['from_title']);
             }
         } else {
-            $this->_pushCollectMessage($frame, $form['from_title'] . '（采集失败内容过少）[' . $form['from_sort'] . ']');
+            $this->_pushCollectMessage($frame, $form['from_title'] . '（采集失败内容过少）[' . $form['from_sort'] . ']', '', 'col', [
+                'from_id'    => $form['id'],
+                'from_title' => $form['from_title'],
+                'from_url' => $form['from_url'],
+                'from_sort'  => $form['from_sort'],
+            ]);
         }
         return true;
     }
@@ -412,11 +419,19 @@ class CollectService extends BaseService
      * @param string     $message
      * @param string     $class
      * @param string     $type
+     * @param array      $data
      */
-    private function _pushCollectMessage(?Frame $frame, string $message, string $class = '', string $type = 'col') : void
+    private function _pushCollectMessage(?Frame $frame, string $message, string $class = '', string $type = 'col', array $data = []) : void
     {
         if (null !== $frame) {
-            $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 0, 'message' => $message, 'class' => $class, 'type' => $type]));
+            $result = ['code' => 0, 'message' => $message, 'type' => $type];
+            if (!empty($class)) {
+                $result['class'] = $class;
+            }
+            if (!empty($data)) {
+                $result['data'] = $data;
+            }
+            $this->sender->push($frame->fd, HelperArray::jsonEncode($result));
         } else {
             echo $message . PHP_EOL;
         }

@@ -97,7 +97,7 @@ class ArticleController extends BaseController
             throw new ManageException(ErrorCode::SAVE_FAILED);
         }
         if (!empty($collectFromId)) {
-            (new CollectService())->confirmCollect($collectFromId);
+            (new CollectService())->confirmCollect([$collectFromId]);
         }
         return $this->success();
     }
