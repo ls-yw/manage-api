@@ -6,7 +6,7 @@ services:
 #    build: ./docker/php
     container_name: 'manageApi'
     ports:
-      - "9801:9501"
+      - "9802:9501"
     volumes:
       - ./:/www:rw
 #    restart: always
