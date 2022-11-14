@@ -10,7 +10,7 @@ services:
     volumes:
       - ./:/www:rw
 #    restart: always
-    command: /bin/bash -c "cd /www && composer update --no-dev"
+#    command: /bin/bash -c "cd /www && composer update --no-dev"
     entrypoint: ["php", "/www/bin/hyperf.php", "start"]
     tty: true
     privileged: true
@@ -19,8 +19,8 @@ services:
   redis:
     image: redis:5.0.3-alpine
     container_name: manageApi-redis
-    ports:
-      - "6380:6379"
+    #ports:
+    #  - "6380:6379"
     volumes:
       - ./docker/redis/redis.conf:/etc/redis.conf:rw
       - ./docker/data/redis:/data:rw
