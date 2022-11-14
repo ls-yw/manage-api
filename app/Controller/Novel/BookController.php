@@ -27,12 +27,17 @@ class BookController extends BaseController
         $page = (int) $request->query('page', 1);
         $size = (int) $request->query('size', 20);
 
+        $isCollect = $request->query('isCollect');
+        if ($isCollect !== null) {
+            $isCollect= (int)$isCollect;
+        }
+
         $type    = (string) $request->query('type');
         $keyword = (string) $request->query('keyword');
 
         $data          = [];
-        $data['list']  = (new BookService())->getList($type, $keyword, null, $page, $size);
-        $data['total'] = (new BookService())->getListCount($type, $keyword, null);
+        $data['list']  = (new BookService())->getList($type, $keyword, $isCollect, $page, $size);
+        $data['total'] = (new BookService())->getListCount($type, $keyword, $isCollect);
 
         if (!empty($data['list'])) {
             foreach ($data['list'] as $key => $value) {
