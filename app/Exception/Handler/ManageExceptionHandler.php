@@ -35,7 +35,7 @@ class ManageExceptionHandler extends ExceptionHandler
                 'code' => 0 === $throwable->getCode() ? ErrorCode::FAILED : $throwable->getCode(),
                 'message' => $throwable->getMessage(),
             ], JSON_UNESCAPED_UNICODE);
-            return $response->withStatus(200)->withBody(new SwooleStream($data));
+            return $response->withStatus(200)->withHeader("Content-Type", "application/json; charset=utf-8")->withBody(new SwooleStream($data));
         }else {
             // 格式化输出
             $data = json_encode([
@@ -50,7 +50,7 @@ class ManageExceptionHandler extends ExceptionHandler
             $this->logger->error($throwable->getTraceAsString());
             print_r(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
             print_r($throwable->getTraceAsString());
-            return $response->withStatus(500)->withBody(new SwooleStream($data));
+            return $response->withStatus(500)->withHeader("Content-Type", "application/json; charset=utf-8")->withBody(new SwooleStream($data));
         }
     }
 

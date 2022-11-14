@@ -10,6 +10,7 @@ services:
     volumes:
       - ./:/www:rw
 #    restart: always
+    command: /bin/bash -c "cd /www && composer update --no-dev"
     entrypoint: ["php", "/www/bin/hyperf.php", "start"]
     tty: true
     privileged: true

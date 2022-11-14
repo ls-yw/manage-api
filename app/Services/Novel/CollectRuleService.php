@@ -60,12 +60,12 @@ class CollectRuleService extends BaseService
         preg_match('/' . $bookCategoryRule . '/i', $html, $resultCategory);
 
         $book = [
-            'name'      => $resultName[1] ?? '',
-            'author'    => $resultAuthor[1] ?? '',
-            'intro'     => $resultIntro[1] ?? '',
-            'thumb_img' => $resultThumbImg[1] ?? '',
-            'finished'  => (int) !empty($resultFinished),
-            'category_name'  => $resultCategory[1] ?? '',
+            'name'          => $resultName[1] ?? '',
+            'author'        => $resultAuthor[1] ?? '',
+            'intro'         => $resultIntro[1] ?? '',
+            'thumb_img'     => $resultThumbImg[1] ?? '',
+            'finished'      => (int) !empty($resultFinished),
+            'category_name' => $resultCategory[1] ?? '',
         ];
 
         return $book;
@@ -141,6 +141,7 @@ class CollectRuleService extends BaseService
         $data = ['content' => '', 'wordsNumber' => 0];
 
         $data['content'] = $resultContent[1] ?? '';
+        $data['content'] = $this->tmpFilterContent($collectId, $data['content']);
         if (empty($data['content'])) {
             return $data;
         }
@@ -181,7 +182,6 @@ class CollectRuleService extends BaseService
         }
         return;
     }
-
 
 
     /**
@@ -242,22 +242,22 @@ class CollectRuleService extends BaseService
      * 处理url标签
      *
      * @author yls
-     * @param string $urlRule
-     * @param string $subBookIdRule
+     * @param string     $urlRule
+     * @param string     $subBookIdRule
      * @param string|int $fromBookId
      * @return string
      */
     public function dealUrlTags(string $urlRule, string $subBookIdRule, string|int $fromBookId, string $articleId = '') : string
     {
         if (!empty($subBookIdRule)) {
-            $subBooKIdFormula = preg_replace('/<{bookId}>/i', (string)$fromBookId, $subBookIdRule);
+            $subBooKIdFormula = preg_replace('/<{bookId}>/i', (string) $fromBookId, $subBookIdRule);
             $subBookId        = $this->computeSubBookId($subBooKIdFormula);
             $urlRule          = preg_replace('/<{subBookId}>/i', $subBookId, $urlRule);
         }
         if (!empty($articleId)) {
             $urlRule = preg_replace('/<{articleId}>/i', $articleId, $urlRule);
         }
-        return preg_replace('/<{bookId}>/i', (string)$fromBookId, $urlRule);
+        return preg_replace('/<{bookId}>/i', (string) $fromBookId, $urlRule);
     }
 
     /**
@@ -271,23 +271,33 @@ class CollectRuleService extends BaseService
     {
         $jia = explode('+', $subBooKIdFormula);
         if (isset($jia['1']) && $jia['1'] != '') {
-            return (string)($jia[0] + $jia[1]);
+            return (string) ($jia[0] + $jia[1]);
         }
         $jian = explode('-', $subBooKIdFormula);
         if (isset($jian['1']) && $jian['1'] != '') {
-            return (string)($jian[0] - $jian[1]);
+            return (string) ($jian[0] - $jian[1]);
         }
         $chen = explode('*', $subBooKIdFormula);
         if (isset($chen['1']) && $chen['1'] != '') {
-            return (string)($chen[0] * $chen[1]);
+            return (string) ($chen[0] * $chen[1]);
         }
         $chu = explode('%%', $subBooKIdFormula);
         if (isset($chu['1']) && $chu['1'] != '') {
-            return (string)floor($chu[0] / $chu[1]);
+            return (string) floor($chu[0] / $chu[1]);
         }
         $mo = explode('%', $subBooKIdFormula);
         if (isset($mo['1']) && $mo['1'] != '') {
-            return (string)($mo[0] % $mo[1]);
+            return (string) ($mo[0] % $mo[1]);
         }
+    }
+
+    public function tmpFilterContent(int $collectId, string $content):string
+    {
+        if ($collectId !== 6) {
+            return $content;
+        }
+
+        $content = preg_replace('/有的人死了，但没有完全死([\w\W]*)御兽师？/', '', $content);
+        return $content;
     }
 }
