@@ -24,11 +24,6 @@ class CollectRuleService extends BaseService
         return CollectRule::where('collect_id', $collectId)->first();
     }
 
-    public function bu()
-    {
-
-    }
-
     /**
      * 采集小说基本信息
      *
@@ -265,9 +260,9 @@ class CollectRuleService extends BaseService
      *
      * @author yls
      * @param string $subBooKIdFormula
-     * @return int
+     * @return string
      */
-    private function computeSubBookId(string $subBooKIdFormula) : string
+    public function computeSubBookId(string $subBooKIdFormula) : string
     {
         $jia = explode('+', $subBooKIdFormula);
         if (isset($jia['1']) && $jia['1'] != '') {

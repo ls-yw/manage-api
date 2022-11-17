@@ -6,6 +6,9 @@ namespace App\Base;
 use App\Constants\ErrorCode;
 use App\Exception\ManageException;
 use App\Model\Model;
+use App\Utils\Helper\HelperArray;
+use App\Utils\Helper\HelperHttp;
+use App\Utils\Log\Log;
 
 class BaseService
 {
@@ -65,5 +68,26 @@ class BaseService
         }
 
         return $data;
+    }
+
+    /**
+     * 上传远程图片
+     *
+     * @author yls
+     * @param string $image
+     * @return string
+     */
+    public function uploadRemoteImage(string $image):string
+    {
+        $url    = env('UPLOAD_URL') . '/upload/urlImg?project=novel&url=' . $image;
+        $res    = (new HelperHttp())->get($url);
+        $result = HelperArray::jsonDecode($res);
+        if (!isset($result['code']) || 0 !== $result['code']) {
+            Log::error('上传封面图片失败', 'collect');
+            Log::error($url, 'collect');
+            Log::error($res, 'collect');
+            throw new ManageException(ErrorCode::UPLOAD_THUMB_IMG);
+        }
+        return env('UPLOAD_URL') . '/' . $result['url'];
     }
 }

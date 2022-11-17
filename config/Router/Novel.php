@@ -27,6 +27,7 @@ Router::addGroup('/novel/',function (){
         Router::post('save', 'App\Controller\Novel\ArticleController@save');
         Router::post('delete', 'App\Controller\Novel\ArticleController@delete');
         Router::get('content', 'App\Controller\Novel\ArticleController@getContent');
+        Router::post('clear', 'App\Controller\Novel\ArticleController@clear');
     });
 
     Router::addGroup('collect/',function (){
@@ -39,6 +40,14 @@ Router::addGroup('/novel/',function (){
         Router::post('test', 'App\Controller\Novel\CollectController@test');
         Router::post('collectBookInfo', 'App\Controller\Novel\CollectController@collectBookInfo');
         Router::post('collectSaveBookInfo', 'App\Controller\Novel\CollectController@collectSaveBookInfo');
+    });
+
+    Router::addGroup('appCollect/', function (){
+        Router::get('search', 'App\Controller\Novel\AppCollectController@search');
+        Router::post('check', 'App\Controller\Novel\AppCollectController@checkCollected');
+        Router::post('collect', 'App\Controller\Novel\AppCollectController@collect');
+        Router::get('look', 'App\Controller\Novel\AppCollectController@look');
+        Router::get('lookContent', 'App\Controller\Novel\AppCollectController@lookContent');
     });
 
     Router::addGroup('member/',function (){
@@ -55,4 +64,6 @@ Router::addGroup('/novel/',function (){
         Router::get('index', 'App\Controller\Novel\SettingController@index');
         Router::post('save', 'App\Controller\Novel\SettingController@save');
     });
+
+    Router::get('test', 'App\Controller\Novel\IndexController@test');
 });

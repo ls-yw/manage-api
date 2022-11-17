@@ -75,6 +75,7 @@ class ErrorCode extends AbstractConstants
      */
     const PARAMS_FAILED = 202;
 
+    const ERROR_CUSTOM = 888;
 
 
 
@@ -111,6 +112,10 @@ class ErrorCode extends AbstractConstants
      * @Message("上传失败")
      */
     const UPLOAD_FAILEd = 1007;
+    /**
+     * @Message("请输入搜索关键字")
+     */
+    const EMPTY_KEYWORD = 1008;
 
     /************************ MODEL *****************************/
     /**
@@ -155,7 +160,16 @@ class ErrorCode extends AbstractConstants
      * @Message("上传封面图片失败")
      */
     const UPLOAD_THUMB_IMG = 12008;
+    /**
+     * @Message("该小说已采集，请去采集小说里面继续采集")
+     */
+    const COLLECT_ID_EQ = 12009;
 
+    /*****APP 采集******/
+    /**
+     * @Message("采集源不存在")
+     */
+    const APP_COLLECT_SOURCE_NO_EXITS = 12100;
 
 
 

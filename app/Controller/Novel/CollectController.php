@@ -21,12 +21,13 @@ class CollectController extends BaseController
      */
     public function list(RequestInterface $request) : ResponseInterface
     {
-        $page = (int) $request->query('page', 1);
-        $size = (int) $request->query('size', 20);
+        $page          = (int) $request->query('page', 1);
+        $size          = (int) $request->query('size', 20);
+        $collectStatus = (int) $request->query('collectStatus', 99);
 
         $data          = [];
-        $data['list']  = (new CollectService())->getList($page, $size);
-        $data['total'] = (new CollectService())->getListCount();
+        $data['list']  = (new CollectService())->getList($collectStatus, $page, $size);
+        $data['total'] = (new CollectService())->getListCount($collectStatus);
 
         return $this->success($data);
     }
@@ -62,6 +63,7 @@ class CollectController extends BaseController
             'name'           => (string) $request->input('name'),
             'host'           => (string) $request->input('host'),
             'iconv'          => (string) $request->input('iconv'),
+            'target_type'    => (int) $request->input('target_type'),
             'collect_status' => (int) $request->input('collect_status'),
         ];
         if (empty($data['name']) || empty($data['host']) || empty($request->input('rules'))) {

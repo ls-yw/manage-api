@@ -72,4 +72,17 @@ class HelperArray
         }
         return $array;
     }
+
+    /**
+     * 从一个二维数组中获取某一个key键的值数组
+     *
+     * @author yls
+     * @param array  $data
+     * @param string $key
+     * @return array
+     */
+    public static function getValueArray(array $data, string $key) : array
+    {
+        return array_column($data, $key);
+    }
 }

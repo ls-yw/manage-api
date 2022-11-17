@@ -7,11 +7,13 @@ use App\Model\Model;
 /**
  * @property int $id 
  * @property string $name 
- * @property string $host 
+ * @property string $ename
+ * @property string $host
  * @property string $iconv 
  * @property int $collect_status 
  * @property int $is_deleted 
- * @property \Carbon\Carbon $created_at 
+ * @property int $target_type
+ * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at 
  * @property int $created_by 
  * @property int $updated_by 
@@ -49,11 +51,11 @@ class Collect extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'name', 'host', 'iconv', 'collect_status', 'is_deleted', 'created_at', 'updated_at', 'created_by', 'updated_by'];
+    protected $fillable = ['id', 'name', 'ename', 'host', 'iconv', 'collect_status', 'is_deleted', 'target_type', 'created_at', 'updated_at', 'created_by', 'updated_by'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'collect_status' => 'integer', 'is_deleted' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
+    protected $casts = ['id' => 'integer', 'collect_status' => 'integer', 'is_deleted' => 'integer', 'target_type' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
 }

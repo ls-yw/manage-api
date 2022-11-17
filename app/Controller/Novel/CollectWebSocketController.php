@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace App\Controller\Novel;
 
+use App\Constants\ErrorCode;
 use App\Exception\ManageException;
+use App\Services\Novel\AppCollectService;
+use App\Services\Novel\BookService;
 use App\Services\Novel\CollectService;
 use App\Utils\Helper\HelperArray;
 use App\Utils\Redis\Redis;
@@ -78,7 +81,7 @@ class CollectWebSocketController implements OnMessageInterface, OnCloseInterface
             return;
         }
         $this->admin = HelperArray::jsonDecode($admin);
-        $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 200, 'message' => '登录成功']));
+//        $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 200, 'message' => '登录成功']));
     }
 
     /**
@@ -95,8 +98,21 @@ class CollectWebSocketController implements OnMessageInterface, OnCloseInterface
             $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 0, 'message' => '待采集的小说ID不能为空', 'class'=>'red']));
             return;
         }
+
         try{
-            (new CollectService())->startCollect($bookId, $frame);
+            $bookInfo = (new BookService())->getById($bookId);
+            if (empty($bookInfo->collect_id)) {
+                throw new ManageException(ErrorCode::ERROR_CUSTOM, '该小说非采集小说');
+            }
+            $collect = (new CollectService())->getById($bookInfo->collect_id);
+            if (empty($collect)) {
+                throw new ManageException(ErrorCode::ERROR_CUSTOM, '采集规则不存在');
+            }
+            if(2 === $collect->target_type) {
+                (new AppCollectService())->startCollect($bookId, $frame);
+            }else {
+                (new CollectService())->startCollect($bookId, $frame);
+            }
         }catch (Exception|ManageException $e) {
             $this->sender->push($frame->fd, HelperArray::jsonEncode(['code' => 0, 'message' => $e->getMessage(), 'class'=>'red']));
         }

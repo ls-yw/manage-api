@@ -122,4 +122,21 @@ class ArticleController extends BaseController
         return $this->success();
     }
 
+    /**
+     * 清空章节
+     *
+     * @author yls
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     * @throws \League\Flysystem\FilesystemException
+     */
+    public function clear(RequestInterface $request) : ResponseInterface
+    {
+        $bookId = (int) $request->input('bookId');
+        if (empty($bookId)) {
+            throw new ManageException(ErrorCode::PARAMS_FAILED);
+        }
+        $data = (new ArticleService())->clear($bookId);
+        return $this->success(['data' => $data]);
+    }
 }

@@ -32,14 +32,20 @@ class CollectService extends BaseService
      * 获取列表
      *
      * @author yls
+     * @param int $collectStatus
      * @param int $page
      * @param int $size
      * @return object
      */
-    public function getList(int $page, int $size) : object
+    public function getList(int $collectStatus, int $page, int $size) : object
     {
         $offset = ($page - 1) * $size;
-        $list   = Collect::where('is_deleted', 0)->orderBy('id', 'desc')->offset($offset)->limit($size)->get();
+        $model  = Collect::where('is_deleted', 0);
+        if (99 !== $collectStatus) {
+            $model->where('collect_status', $collectStatus);
+        }
+        $list = $model->orderBy('id', 'desc')
+            ->offset($offset)->limit($size)->get();
         return $this->fillNameToModel($list, Collect::class);
     }
 
@@ -47,11 +53,16 @@ class CollectService extends BaseService
      * 获取列表条数
      *
      * @author yls
+     * @param int $collectStatus
      * @return int
      */
-    public function getListCount() : int
+    public function getListCount(int $collectStatus) : int
     {
-        return Collect::where('is_deleted', 0)->count();
+        $model = Collect::where('is_deleted', 0);
+        if (99 !== $collectStatus) {
+            $model->where('collect_status', $collectStatus);
+        }
+        return $model->count();
     }
 
     /**
@@ -81,6 +92,18 @@ class CollectService extends BaseService
     public function getById(int $id) : object
     {
         return Collect::find($id);
+    }
+
+    /**
+     * 根据英文名称获取采集详情
+     *
+     * @author yls
+     * @param string $ename
+     * @return object
+     */
+    public function getByEname(string $ename)
+    {
+        return Collect::where('ename', $ename)->first();
     }
 
     /**
@@ -250,6 +273,27 @@ class CollectService extends BaseService
     }
 
     /**
+     * 检测是否已采集相同小说
+     *
+     * @author yls
+     * @param string $bookName
+     * @param string $bookAuthor
+     * @param int    $collectId
+     * @return int
+     */
+    public function checkCollectedByBook(string $bookName, string $bookAuthor, int $collectId) : int
+    {
+        $book = (new BookService())->getByNameAndAuthor($bookName, $bookAuthor);
+        if (!empty($book)) {
+            if ((int) $book['collect_id'] !== (int) $collectId) {
+                throw new ManageException(ErrorCode::COLLECT_ID_NO_EQ);
+            }
+            return (int) $book['id'];
+        }
+        return 0;
+    }
+
+    /**
      * 保存采集的小说详情
      *
      * @author yls
@@ -259,24 +303,12 @@ class CollectService extends BaseService
      */
     public function collectSaveBookInfo(int $collectId, array $collectBookInfo) : int
     {
-        $book = (new BookService())->getByNameAndAuthor($collectBookInfo['name'], $collectBookInfo['author']);
-        if (!empty($book)) {
-            if ((int) $book['collect_id'] !== (int) $collectId) {
-                throw new ManageException(ErrorCode::COLLECT_ID_NO_EQ);
-            }
-            return (int) $book['id'];
+        $bookId = $this->checkCollectedByBook($collectBookInfo['name'], $collectBookInfo['author'], $collectId);
+        if (!empty($bookId)) {
+            return $bookId;
         }
         // 保存远程缩略图
-        $url    = env('UPLOAD_URL') . '/upload/urlImg?project=novel&url=' . $collectBookInfo['thumb_img'];
-        $res    = (new HelperHttp())->get($url);
-        $result = HelperArray::jsonDecode($res);
-        if (!isset($result['code']) || 0 !== $result['code']) {
-            Log::error('上传封面图片失败', 'collect');
-            Log::error($url, 'collect');
-            Log::error($res, 'collect');
-            throw new ManageException(ErrorCode::UPLOAD_THUMB_IMG);
-        }
-        $collectBookInfo['thumb_img'] = env('UPLOAD_URL') . '/' . $result['url'];
+        $collectBookInfo['thumb_img'] = $this->uploadRemoteImage($collectBookInfo['thumb_img']);;
         return $this->saveData($collectBookInfo, Book::make());
     }
 
@@ -291,27 +323,27 @@ class CollectService extends BaseService
     {
         $bookInfo = (new BookService())->getById($bookId);
         if (empty($bookInfo->collect_id)) {
-            $this->_pushCollectMessage($frame, '该小说非采集小说', 'red');
+            $this->pushSocketCollectMessage($frame, '该小说非采集小说', 'red');
             return;
         }
-        $this->_pushCollectMessage($frame, '开始采集小说《'.$bookInfo->name.'》', '', 'row');
+        $this->pushSocketCollectMessage($frame, '开始采集小说《' . $bookInfo->name . '》', '', 'row');
 
         $collectRule = (new CollectRuleService())->getByCollectId((int) $bookInfo->collect_id);
         if (empty($collectRule)) {
-            $this->_pushCollectMessage($frame, '该小说的采集规则不存在', 'red');
+            $this->pushSocketCollectMessage($frame, '该小说的采集规则不存在', 'red');
             return;
         }
         $url                = (new CollectRuleService())->dealUrlTags($collectRule->chapter_url, $collectRule->sub_book_id, $bookInfo->from_collect_book_id);
         $collectArticleList = (new CollectRuleService())->collectArticleList((int) $bookInfo->collect_id, $url);
         if (empty($collectArticleList)) {
-            $this->_pushCollectMessage($frame, '采集不到该小说的章节列表', 'red');
+            $this->pushSocketCollectMessage($frame, '采集不到该小说的章节列表', 'red');
             return;
         }
 
         $collectForm = CollectFrom::where(['book_id' => $bookId, 'collect_id' => $bookInfo['collect_id']])->get()->toArray();
         $this->_updateCollectForm($bookId, (int) $bookInfo->collect_id, $collectForm, $collectArticleList, $frame);
         $collectForm = $this->getCollectFormAllByStatus($bookId, 0, true);
-        $this->_pushCollectMessage($frame, '共有' . count($collectForm) . '篇章节需要采集', '', 'row');
+        $this->pushSocketCollectMessage($frame, '共有' . count($collectForm) . '篇章节需要采集', '', 'row');
         $chapter = $this->getChapter($bookId, $frame);
         if (empty($chapter)) {
             return;
@@ -324,7 +356,8 @@ class CollectService extends BaseService
             }
             $index++;
         }
-        $this->_pushCollectMessage($frame, '采集结束', '', 'row');
+        (new BookService())->updateCollectAt($bookId);
+        $this->pushSocketCollectMessage($frame, '采集结束', '', 'row', ['action' => 'closed']);
     }
 
     /**
@@ -342,13 +375,13 @@ class CollectService extends BaseService
     {
         $collectForm = $this->getCollectFormAllByStatus($bookId, 0);
         if (!isset($collectForm[$collectFormIndex])) {
-            $this->_pushCollectMessage($frame, '采集结束', '', 'row');
+            $this->pushSocketCollectMessage($frame, '采集结束', '', 'row');
             return false;
         }
         $form        = $collectForm[$collectFormIndex];
         $collectRule = (new CollectRuleService())->getByCollectId((int) $form['collect_id']);
         if (empty($collectRule)) {
-            $this->_pushCollectMessage($frame, '该小说的采集规则不存在', 'red');
+            $this->pushSocketCollectMessage($frame, '该小说的采集规则不存在', 'red');
             return false;
         }
         $url            = (new CollectRuleService())->dealUrlTags($collectRule->article_url, $collectRule->sub_book_id, $fromBookId, (string) $form['from_article_id']);
@@ -363,18 +396,18 @@ class CollectService extends BaseService
             ];
             $row     = (new ArticleService())->save($article, $articleContent['content']);
             if (empty($row)) {
-                $this->_pushCollectMessage($frame, $form['from_title'] . '（保存失败）');
+                $this->pushSocketCollectMessage($frame, $form['from_title'] . '（保存失败）');
             } else {
                 CollectFrom::where(['id' => $form['id']])->update(['from_status' => 1]);
 
                 $row = Chapter::where('id', $chapterId)->increment('articlenum');
-                $this->_pushCollectMessage($frame, $form['from_title']);
+                $this->pushSocketCollectMessage($frame, $form['from_title']);
             }
         } else {
-            $this->_pushCollectMessage($frame, $form['from_title'] . '（采集失败内容过少）[' . $form['from_sort'] . ']', '', 'col', [
+            $this->pushSocketCollectMessage($frame, $form['from_title'] . '（采集失败内容过少）[' . $form['from_sort'] . ']', '', 'col', [
                 'from_id'    => $form['id'],
                 'from_title' => $form['from_title'],
-                'from_url' => $form['from_url'],
+                'from_url'   => $form['from_url'],
                 'from_sort'  => $form['from_sort'],
             ]);
         }
@@ -403,10 +436,10 @@ class CollectService extends BaseService
         $chapter['sort']       = 1;
         $chapterId             = (new BookService())->saveChapter($chapter);
         if (empty($chapterId)) {
-            $this->_pushCollectMessage($frame, '新增默认章节失败', '', 'row');
+            $this->pushSocketCollectMessage($frame, '新增默认章节失败', '', 'row');
             return [];
         }
-        $this->_pushCollectMessage($frame, '新增默认章节', '', 'row');
+        $this->pushSocketCollectMessage($frame, '新增默认章节', '', 'row');
         $chapter['id'] = $chapterId;
         return $chapter;
     }
@@ -421,7 +454,7 @@ class CollectService extends BaseService
      * @param string     $type
      * @param array      $data
      */
-    private function _pushCollectMessage(?Frame $frame, string $message, string $class = '', string $type = 'col', array $data = []) : void
+    public function pushSocketCollectMessage(?Frame $frame, string $message, string $class = '', string $type = 'col', array $data = []) : void
     {
         if (null !== $frame) {
             $result = ['code' => 0, 'message' => $message, 'type' => $type];
@@ -478,12 +511,12 @@ class CollectService extends BaseService
             $sort++;
         }
         if (empty($insertData)) {
-            $this->_pushCollectMessage($frame, '无新增待采集的章节列表', '', 'row');
+            $this->pushSocketCollectMessage($frame, '无新增待采集的章节列表', '', 'row');
             return;
         }
         $res     = CollectFrom::insert($insertData);
         $message = '新增待' . count($insertData) . '条采集的章节列表' . ($res ? '成功' : '失败');
-        $this->_pushCollectMessage($frame, $message, '', 'row');
+        $this->pushSocketCollectMessage($frame, $message, '', 'row');
         Redis::getInstance()->del(RedisKeyConstant::WAIT_COLLECT_FORM_LIST . $bookId . '_0');
     }
 }

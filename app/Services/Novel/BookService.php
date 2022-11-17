@@ -143,6 +143,18 @@ class BookService extends BaseService
     }
 
     /**
+     * 更新采集时间
+     *
+     * @author yls
+     * @param int $bookId
+     * @return int
+     */
+    public function updateCollectAt(int $bookId) : int
+    {
+        return Book::where('id', $bookId)->update(['last_collect_at' => HelperTime::now()]);
+    }
+
+    /**
      * 根据ID获取详情
      *
      * @author yls
@@ -256,7 +268,7 @@ class BookService extends BaseService
      * @param array $data
      * @return int
      */
-    public function saveChapter(array$data):int
+    public function saveChapter(array $data) : int
     {
         return $this->saveData($data, chapter::make());
     }
