@@ -126,6 +126,7 @@ class ArticleService extends BaseService
         } catch (FilesystemException|UnableToWriteFile|\Exception $e) {
             Log::error('写入小说内容失败', 'oss');
             Log::error($e->getMessage(), 'oss');
+            Article::where('id', $articleId)->delete();
             throw new ManageException(ErrorCode::WRITE_OSS_OF_CONTENT);
         }
         $url = 'http://woodlsy-novel.oss-cn-hangzhou-internal.aliyuncs.com/book/' . $data['book_id'] . '/' . $articleId . '.txt';
