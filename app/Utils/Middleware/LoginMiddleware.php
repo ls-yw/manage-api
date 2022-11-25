@@ -23,6 +23,11 @@ class LoginMiddleware implements MiddlewareInterface
         if ('/login' === $urlPath) {
             return $handler->handle($request);
         }
+        // 临时代码 start
+        if ('/novel/test' === $urlPath) {
+            return $handler->handle($request);
+        }
+        // 临时代码 end
         if (empty($token)) {
             throw new ManageException(ErrorCode::NO_LOGIN);
         }

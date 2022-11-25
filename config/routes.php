@@ -17,6 +17,7 @@ Router::post('/upload', 'App\Controller\Admin\UploadController@index');
 
 require_once 'Router/Admin.php';
 require_once 'Router/Novel.php';
+require_once 'Router/Blog.php';
 
 Router::addServer('ws', function () {
     Router::get('/collect', 'App\Controller\Novel\CollectWebSocketController');

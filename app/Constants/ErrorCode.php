@@ -55,6 +55,10 @@ class ErrorCode extends AbstractConstants
      */
     const CONFIRM_FAILED = 5;
 
+    /**
+     * @Message("恢复失败")
+     */
+    const RECOVERY_FAILED = 6;
 
     /**
      * @Message("curl请求失败")

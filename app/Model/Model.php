@@ -15,4 +15,5 @@ use Hyperf\DbConnection\Model\Model as BaseModel;
 
 abstract class Model extends BaseModel
 {
+    //php bin/hyperf.php gen:model lm_config --pool=manage --path=app/Model/Manage
 }
