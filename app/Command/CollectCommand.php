@@ -45,14 +45,14 @@ class CollectCommand  extends HyperfCommand
                 return;
             }
             foreach ($books as $book) {
-                $collect = (new CollectService())->getById($book->collect_id);
+                $collect = (new CollectService())->getById($book['collect_id']);
                 if (empty($collect)) {
-                    echo '采集规则不存在，collectId:'.$book->collect_id.PHP_EOL;
+                    echo '采集规则不存在，collectId:'.$book['collect_id.PHP_EOL'];
                     Redis::getInstance()->del($lockKey);
                     return;
                 }
                 if (2 === $collect->target_type) {
-                    (new AppCollectService())->startCollect($book->id);
+                    (new AppCollectService())->startCollect($book['id']);
                 }
             }
         }catch (\Exception $e) {
