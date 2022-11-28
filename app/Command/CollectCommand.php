@@ -27,6 +27,7 @@ class CollectCommand  extends HyperfCommand
     {
         $lockKey = RedisKeyConstant::TASK_LOCK.'collect';
         if (Redis::getInstance()->exists($lockKey)) {
+            echo '已被锁住'.PHP_EOL;
             return;
         }
 
