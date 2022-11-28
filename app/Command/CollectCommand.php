@@ -41,12 +41,14 @@ class CollectCommand  extends HyperfCommand
             if (empty($books)) {
                 echo '第'.$page.'页 无待采集的小说'.PHP_EOL;
                 Redis::getInstance()->del($pageKey);
+                Redis::getInstance()->del($lockKey);
                 return;
             }
             foreach ($books as $book) {
                 $collect = (new CollectService())->getById($book->collect_id);
                 if (empty($collect)) {
                     echo '采集规则不存在，collectId:'.$book->collect_id.PHP_EOL;
+                    Redis::getInstance()->del($lockKey);
                     return;
                 }
                 if (2 === $collect->target_type) {
