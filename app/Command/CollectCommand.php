@@ -53,7 +53,7 @@ class CollectCommand  extends HyperfCommand
                 }
             }
         }catch (\Exception $e) {
-            echo '抛出了错误：'.$e->getMessage();
+            echo '抛出了错误：'.$e->getMessage().PHP_EOL;
         }
 
         Redis::getInstance()->setEx($pageKey, 86400, $page+1);
