@@ -37,7 +37,7 @@ class CollectCommand  extends HyperfCommand
             // 通过内置方法 line 在 Console 输出 Hello Hyperf.
             $pageKey = RedisKeyConstant::TASK_AUTO_COLLECT_PAGE;
             $page = !Redis::getInstance()->exists($pageKey) ? 1 : (int)Redis::getInstance()->get($pageKey);
-            $books = (new BookService())->getList('', '', 1, $page, 50);
+            $books = (new BookService())->getList('', '', 1, $page, 50)->toArray();
             if (empty($books)) {
                 echo '第'.$page.'页 无待采集的小说'.PHP_EOL;
                 Redis::getInstance()->del($pageKey);
